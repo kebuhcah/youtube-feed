@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+
+# API Keys and secrets
+*.key
+.env
+.env.local
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Build files
+dist/
+build/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Extension package
+*.zip
+*.crx
+*.pem

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generate Extension Icons</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .container {
+      background: white;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #1a73e8;
+      margin-bottom: 10px;
+    }
+    .subtitle {
+      color: #666;
+      margin-bottom: 30px;
+    }
+    .preview {
+      display: flex;
+      gap: 20px;
+      margin: 30px 0;
+      flex-wrap: wrap;
+    }
+    .icon-preview {
+      text-align: center;
+    }
+    canvas {
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      display: block;
+      margin-bottom: 10px;
+    }
+    button {
+      background: #1a73e8;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      margin: 5px;
+      transition: all 0.2s;
+    }
+    button:hover {
+      background: #1557b0;
+      transform: translateY(-1px);
+    }
+    .download-btn {
+      background: #34a853;
+      font-size: 12px;
+      padding: 8px 16px;
+    }
+    .download-btn:hover {
+      background: #2d8e47;
+    }
+    .all-buttons {
+      margin-top: 30px;
+      text-align: center;
+    }
+    .instructions {
+      background: #e8f0fe;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 30px;
+    }
+    .instructions h3 {
+      margin-top: 0;
+      color: #1967d2;
+    }
+    .instructions ol {
+      margin: 10px 0;
+      padding-left: 20px;
+    }
+    .instructions li {
+      margin: 8px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📹 YouTube Feed Organizer - Icon Generator</h1>
+    <p class="subtitle">Generate dummy icons for your Chrome extension</p>
+
+    <div class="preview" id="preview"></div>
+
+    <div class="all-buttons">
+      <button onclick="downloadAll()">⬇️ Download All Icons</button>
+      <button onclick="regenerate()">🔄 Regenerate</button>
+    </div>
+
+    <div class="instructions">
+      <h3>📝 Instructions</h3>
+      <ol>
+        <li>Click "Download All Icons" or download each icon individually</li>
+        <li>Move the downloaded PNG files to <code>src/assets/icons/</code></li>
+        <li>Make sure the filenames match: <code>icon16.png</code>, <code>icon32.png</code>, <code>icon48.png</code>, <code>icon128.png</code></li>
+        <li>Reload your extension in <code>chrome://extensions/</code></li>
+      </ol>
+    </div>
+  </div>
+
+  <script>
+    const sizes = [16, 32, 48, 128];
+    const colors = {
+      primary: '#1a73e8',
+      secondary: '#ffffff',
+      accent: '#FF0000'
+    };
+
+    function createIcon(size) {
+      const canvas = document.createElement('canvas');
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext('2d');
+
+      // Background
+      ctx.fillStyle = colors.primary;
+      ctx.fillRect(0, 0, size, size);
+
+      // Play icon (triangle)
+      const centerX = size / 2;
+      const centerY = size / 2;
+      const triangleSize = size * 0.4;
+
+      ctx.fillStyle = colors.secondary;
+      ctx.beginPath();
+      ctx.moveTo(centerX - triangleSize * 0.3, centerY - triangleSize * 0.5);
+      ctx.lineTo(centerX - triangleSize * 0.3, centerY + triangleSize * 0.5);
+      ctx.lineTo(centerX + triangleSize * 0.5, centerY);
+      ctx.closePath();
+      ctx.fill();
+
+      // Add small red accent (YouTube style)
+      if (size >= 32) {
+        ctx.fillStyle = colors.accent;
+        const dotSize = size * 0.15;
+        ctx.beginPath();
+        ctx.arc(size * 0.8, size * 0.2, dotSize, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Border
+      ctx.strokeStyle = 'rgba(0,0,0,0.1)';
+      ctx.lineWidth = size * 0.02;
+      ctx.strokeRect(0, 0, size, size);
+
+      return canvas;
+    }
+
+    function downloadCanvas(canvas, filename) {
+      const link = document.createElement('a');
+      link.download = filename;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+
+    function generateIcons() {
+      const preview = document.getElementById('preview');
+      preview.innerHTML = '';
+
+      sizes.forEach(size => {
+        const canvas = createIcon(size);
+
+        const container = document.createElement('div');
+        container.className = 'icon-preview';
+
+        const label = document.createElement('div');
+        label.textContent = `${size}×${size}px`;
+        label.style.fontWeight = '500';
+        label.style.marginBottom = '8px';
+        label.style.color = '#666';
+
+        const downloadBtn = document.createElement('button');
+        downloadBtn.className = 'download-btn';
+        downloadBtn.textContent = `Download icon${size}.png`;
+        downloadBtn.onclick = () => downloadCanvas(canvas, `icon${size}.png`);
+
+        container.appendChild(label);
+        container.appendChild(canvas);
+        container.appendChild(downloadBtn);
+        preview.appendChild(container);
+
+        // Store canvas for download all
+        canvas.dataset.filename = `icon${size}.png`;
+      });
+    }
+
+    function downloadAll() {
+      const canvases = document.querySelectorAll('canvas');
+      canvases.forEach((canvas, index) => {
+        setTimeout(() => {
+          downloadCanvas(canvas, canvas.dataset.filename);
+        }, index * 200); // Stagger downloads
+      });
+    }
+
+    function regenerate() {
+      generateIcons();
+    }
+
+    // Generate icons on load
+    generateIcons();
+  </script>
+</body>
+</html>

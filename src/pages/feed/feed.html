@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YouTube Feed Organizer</title>
+  <link rel="stylesheet" href="feed.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="header-content">
+        <h1>YouTube Feed Organizer</h1>
+        <div class="header-actions">
+          <button id="capture-btn" class="btn btn-primary">
+            <span class="btn-icon">📹</span>
+            Capture Feed
+          </button>
+          <button id="settings-btn" class="btn btn-secondary">
+            <span class="btn-icon">⚙️</span>
+            Settings
+          </button>
+        </div>
+      </div>
+      <div class="header-info">
+        <div id="capture-status" class="status-badge">
+          Last capture: <span id="last-capture-time">Never</span>
+        </div>
+        <div id="video-count" class="status-badge">
+          Videos: <span id="video-count-number">0</span>
+        </div>
+        <div id="storage-usage" class="status-badge">
+          Storage: <span id="storage-usage-text">0 MB</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="filters-bar">
+      <div class="filter-group">
+        <label for="language-filter">Language</label>
+        <select id="language-filter" multiple size="1" class="filter-select">
+          <option value="">All Languages</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="country-filter">Country</label>
+        <select id="country-filter" multiple size="1" class="filter-select">
+          <option value="">All Countries</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="sort-select">Sort By</label>
+        <select id="sort-select" class="filter-select">
+          <option value="date">Date (Newest)</option>
+          <option value="views">View Count</option>
+          <option value="title">Title (A-Z)</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <input type="text" id="search-input" placeholder="Search videos..." class="search-input">
+      </div>
+
+      <div class="filter-group">
+        <button id="clear-filters-btn" class="btn btn-small">Clear Filters</button>
+      </div>
+    </div>
+
+    <main>
+      <div id="loading-state" class="loading-state" style="display: none;">
+        <div class="spinner"></div>
+        <p>Loading videos...</p>
+      </div>
+
+      <div id="empty-state" class="empty-state" style="display: none;">
+        <div class="empty-icon">📺</div>
+        <h2>No Videos Yet</h2>
+        <p>Click "Capture Feed" to start collecting videos from your YouTube homepage.</p>
+        <button id="empty-capture-btn" class="btn btn-primary btn-large">Capture Feed</button>
+      </div>
+
+      <div id="error-state" class="error-state" style="display: none;">
+        <div class="error-icon">⚠️</div>
+        <h2>Error</h2>
+        <p id="error-message"></p>
+        <button id="retry-btn" class="btn btn-primary">Retry</button>
+      </div>
+
+      <div id="videos-container" class="videos-grid">
+        <!-- Video cards will be inserted here -->
+      </div>
+    </main>
+
+    <footer>
+      <div class="footer-stats">
+        <span id="displayed-count">Showing <strong>0</strong> videos</span>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Capture progress modal -->
+  <div id="capture-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <h2>Capturing Videos...</h2>
+      <div class="progress-container">
+        <div class="progress-bar">
+          <div id="capture-progress" class="progress-fill" style="width: 0%"></div>
+        </div>
+        <p id="capture-progress-text">Initializing...</p>
+      </div>
+      <p class="help-text">This may take 10-20 seconds. Please don't close this tab.</p>
+    </div>
+  </div>
+
+  <script type="module" src="feed.js"></script>
+</body>
+</html>

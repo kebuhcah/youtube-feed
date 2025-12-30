@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YouTube Feed Organizer - Settings</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>YouTube Feed Organizer</h1>
+      <p class="subtitle">Configure your extension settings</p>
+    </header>
+
+    <main>
+      <section class="settings-section">
+        <h2>YouTube API Configuration</h2>
+        <p class="info-text">
+          To use this extension, you need a YouTube Data API v3 key from Google Cloud Console.
+          <a href="#" id="api-help-link">View setup instructions</a>
+        </p>
+
+        <div class="form-group">
+          <label for="api-key">API Key</label>
+          <input
+            type="password"
+            id="api-key"
+            placeholder="Enter your YouTube Data API v3 key"
+            autocomplete="off"
+          >
+          <button type="button" id="toggle-visibility" class="btn-icon" title="Show/Hide API key">
+            👁️
+          </button>
+        </div>
+
+        <div class="button-group">
+          <button type="button" id="validate-key" class="btn btn-secondary">
+            Validate API Key
+          </button>
+          <button type="button" id="save-api-key" class="btn btn-primary">
+            Save API Key
+          </button>
+        </div>
+
+        <div id="api-status" class="status-message" style="display: none;"></div>
+      </section>
+
+      <section class="settings-section">
+        <h2>Capture Settings</h2>
+
+        <div class="form-group">
+          <label for="target-video-count">Target Video Count (for auto-scroll)</label>
+          <input
+            type="number"
+            id="target-video-count"
+            min="20"
+            max="200"
+            value="100"
+          >
+          <p class="help-text">Number of videos to capture during auto-scroll (20-200)</p>
+        </div>
+
+        <div class="form-group">
+          <label for="max-stored-videos">Maximum Stored Videos</label>
+          <input
+            type="number"
+            id="max-stored-videos"
+            min="50"
+            max="1000"
+            value="500"
+          >
+          <p class="help-text">Maximum number of videos to keep in storage (50-1000)</p>
+        </div>
+      </section>
+
+      <section class="settings-section">
+        <h2>Data Management</h2>
+
+        <div class="storage-info">
+          <p>Storage used: <span id="storage-used">0</span> MB / 10 MB</p>
+          <div class="progress-bar">
+            <div id="storage-progress" class="progress-fill" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <div class="button-group">
+          <button type="button" id="clear-videos" class="btn btn-danger">
+            Clear All Videos
+          </button>
+        </div>
+      </section>
+
+      <section class="settings-section">
+        <h2>About</h2>
+        <p>YouTube Feed Organizer v1.0.0</p>
+        <p>Capture and categorize your YouTube homepage recommendations by language and country.</p>
+        <p>
+          <a href="https://github.com" target="_blank">View on GitHub</a> |
+          <a href="https://github.com/issues" target="_blank">Report Issue</a>
+        </p>
+      </section>
+    </main>
+
+    <footer>
+      <div id="save-status" class="status-message" style="display: none;"></div>
+      <button type="button" id="save-settings" class="btn btn-primary btn-large">
+        Save All Settings
+      </button>
+    </footer>
+  </div>
+
+  <script type="module" src="options.js"></script>
+</body>
+</html>
