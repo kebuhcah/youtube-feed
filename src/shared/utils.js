@@ -191,7 +191,8 @@ export function getLanguageName(code) {
     'uz': 'Uzbek',
     'yo': 'Yoruba',
     'zu': 'Zulu',
-    'sh': 'Serbo-Croatian'
+    'sh': 'Serbo-Croatian',
+    'nan': 'Hokkien'
   };
 
   return languages[normalizedCode] || code.toUpperCase();

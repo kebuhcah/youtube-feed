@@ -160,33 +160,55 @@ async function handleCaptureComplete(data) {
   await loadVideos();
 }
 
-// Update filter options
-function updateFilterOptions() {
-  // Sort languages by English name
-  const sortedLanguages = [...availableLanguages].sort((a, b) => {
-    return getLanguageName(a).localeCompare(getLanguageName(b));
+// Update filter options based on current video set
+function updateFilterOptions(videosForLanguages = allVideos, videosForCountries = allVideos) {
+  // Calculate language counts from videos filtered by country (if any)
+  const languageCounts = {};
+  videosForLanguages.forEach(video => {
+    const lang = video.defaultLanguage || video.defaultAudioLanguage;
+    if (lang && lang !== 'unknown') {
+      languageCounts[lang] = (languageCounts[lang] || 0) + 1;
+    }
+  });
+
+  // Calculate country counts from videos filtered by language (if any)
+  const countryCounts = {};
+  videosForCountries.forEach(video => {
+    const country = video.regionCode;
+    if (country && country !== 'unknown') {
+      countryCounts[country] = (countryCounts[country] || 0) + 1;
+    }
+  });
+
+  // Sort languages by count (descending)
+  const sortedLanguages = Object.keys(languageCounts).sort((a, b) => {
+    return languageCounts[b] - languageCounts[a];
   });
 
   // Update language filter
+  const currentlySelectedLangs = Array.from(languageFilter.selectedOptions).map(opt => opt.value);
   languageFilter.innerHTML = '<option value="">All Languages</option>';
   sortedLanguages.forEach(lang => {
     const option = document.createElement('option');
     option.value = lang;
-    option.textContent = getLanguageName(lang);
+    option.textContent = `${getLanguageName(lang)} (${languageCounts[lang]})`;
+    option.selected = currentlySelectedLangs.includes(lang);
     languageFilter.appendChild(option);
   });
 
-  // Sort countries by English name
-  const sortedCountries = [...availableCountries].sort((a, b) => {
-    return getCountryName(a).localeCompare(getCountryName(b));
+  // Sort countries by count (descending)
+  const sortedCountries = Object.keys(countryCounts).sort((a, b) => {
+    return countryCounts[b] - countryCounts[a];
   });
 
   // Update country filter
+  const currentlySelectedCountries = Array.from(countryFilter.selectedOptions).map(opt => opt.value);
   countryFilter.innerHTML = '<option value="">All Countries</option>';
   sortedCountries.forEach(country => {
     const option = document.createElement('option');
     option.value = country;
-    option.textContent = getCountryName(country);
+    option.textContent = `${getCountryName(country)} (${countryCounts[country]})`;
+    option.selected = currentlySelectedCountries.includes(country);
     countryFilter.appendChild(option);
   });
 }
@@ -209,12 +231,47 @@ function handleFilterChange() {
     sortBy: sortSelect.value
   };
 
+  // For language filter: show all languages, but filtered by selected countries (if any)
+  let videosForLanguageFilter = allVideos;
+  if (selectedCountries.length > 0) {
+    videosForLanguageFilter = videosForLanguageFilter.filter(video =>
+      selectedCountries.includes(video.regionCode)
+    );
+  }
+
+  // For country filter: show all countries, but filtered by selected languages (if any)
+  let videosForCountryFilter = allVideos;
+  if (selectedLanguages.length > 0) {
+    videosForCountryFilter = videosForCountryFilter.filter(video =>
+      selectedLanguages.includes(video.defaultLanguage) ||
+      selectedLanguages.includes(video.defaultAudioLanguage)
+    );
+  }
+
+  // Update filter options with separate video sets
+  updateFilterOptions(videosForLanguageFilter, videosForCountryFilter);
+
+  // Apply filters and render
   applyFilters();
 }
 
 // Handle search change
 function handleSearchChange() {
   currentFilters.searchQuery = searchInput.value.trim().toLowerCase();
+
+  // Get videos matching search
+  let searchedVideos = allVideos;
+
+  if (currentFilters.searchQuery) {
+    searchedVideos = searchedVideos.filter(video =>
+      video.title.toLowerCase().includes(currentFilters.searchQuery) ||
+      video.channelTitle.toLowerCase().includes(currentFilters.searchQuery)
+    );
+  }
+
+  // Update filter options based on search results (both filters use searched videos)
+  updateFilterOptions(searchedVideos, searchedVideos);
+
   applyFilters();
 }
 
@@ -336,6 +393,9 @@ function clearFilters() {
     sortBy: 'date',
     searchQuery: ''
   };
+
+  // Reset filter options to show all videos (both filters use all videos)
+  updateFilterOptions(allVideos, allVideos);
 
   applyFilters();
 }
