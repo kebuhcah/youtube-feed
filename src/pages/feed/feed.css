@@ -92,7 +92,7 @@ h1 {
 
 .filter-select,
 .search-input {
-  padding: 10px 12px;
+  padding: 8px 12px;
   border: 1px solid #ddd;
   border-radius: 6px;
   font-size: 14px;
@@ -100,10 +100,31 @@ h1 {
   transition: border-color 0.2s;
 }
 
+.filter-select[multiple] {
+  min-height: 180px;
+  padding: 4px;
+}
+
+.filter-select[multiple] option {
+  padding: 6px 10px;
+  border-radius: 4px;
+  margin: 2px 0;
+}
+
+.filter-select[multiple] option:hover {
+  background: #e8f0fe;
+}
+
+.filter-select[multiple] option:checked {
+  background: #1a73e8;
+  color: white;
+}
+
 .filter-select:focus,
 .search-input:focus {
   outline: none;
   border-color: #1a73e8;
+  box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
 }
 
 .search-input {
