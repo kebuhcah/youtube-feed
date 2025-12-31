@@ -95,11 +95,25 @@ export function formatDuration(isoDuration) {
 }
 
 /**
+ * Normalize language code by removing regional suffix
+ * @param {string} code - Language code (e.g., "en-US", "en-GB")
+ * @returns {string} Normalized code (e.g., "en")
+ */
+export function normalizeLanguageCode(code) {
+  if (!code || code === 'unknown') return 'unknown';
+  return code.toLowerCase().split('-')[0];
+}
+
+/**
  * Get language name from language code
- * @param {string} code - ISO 639-1 language code
+ * @param {string} code - ISO 639-1 language code (e.g., "en", "en-US", "en-GB")
  * @returns {string} Language name
  */
 export function getLanguageName(code) {
+  if (!code) return 'Unknown';
+
+  const normalizedCode = normalizeLanguageCode(code);
+
   const languages = {
     'en': 'English',
     'es': 'Spanish',
@@ -135,9 +149,52 @@ export function getLanguageName(code) {
     'id': 'Indonesian',
     'ms': 'Malay',
     'he': 'Hebrew',
-    'fa': 'Persian'
+    'fa': 'Persian',
+    'ur': 'Urdu',
+    'sw': 'Swahili',
+    'am': 'Amharic',
+    'af': 'Afrikaans',
+    'sq': 'Albanian',
+    'hy': 'Armenian',
+    'az': 'Azerbaijani',
+    'eu': 'Basque',
+    'be': 'Belarusian',
+    'bs': 'Bosnian',
+    'bg': 'Bulgarian',
+    'ca': 'Catalan',
+    'hr': 'Croatian',
+    'et': 'Estonian',
+    'tl': 'Filipino',
+    'ka': 'Georgian',
+    'gu': 'Gujarati',
+    'ha': 'Hausa',
+    'is': 'Icelandic',
+    'ig': 'Igbo',
+    'ga': 'Irish',
+    'kn': 'Kannada',
+    'kk': 'Kazakh',
+    'km': 'Khmer',
+    'ku': 'Kurdish',
+    'lv': 'Latvian',
+    'lt': 'Lithuanian',
+    'mk': 'Macedonian',
+    'ml': 'Malayalam',
+    'mt': 'Maltese',
+    'mn': 'Mongolian',
+    'ne': 'Nepali',
+    'ps': 'Pashto',
+    'sr': 'Serbian',
+    'si': 'Sinhala',
+    'sk': 'Slovak',
+    'sl': 'Slovenian',
+    'so': 'Somali',
+    'uz': 'Uzbek',
+    'yo': 'Yoruba',
+    'zu': 'Zulu',
+    'sh': 'Serbo-Croatian'
   };
-  return languages[code] || code.toUpperCase();
+
+  return languages[normalizedCode] || code.toUpperCase();
 }
 
 /**
@@ -146,53 +203,158 @@ export function getLanguageName(code) {
  * @returns {string} Country name
  */
 export function getCountryName(code) {
+  if (!code) return 'Unknown';
+
   const countries = {
+    // North America
     'US': 'United States',
-    'GB': 'United Kingdom',
     'CA': 'Canada',
-    'AU': 'Australia',
-    'IN': 'India',
+    'MX': 'Mexico',
+
+    // South America
+    'AR': 'Argentina',
+    'BR': 'Brazil',
+    'CL': 'Chile',
+    'CO': 'Colombia',
+    'PE': 'Peru',
+    'VE': 'Venezuela',
+    'EC': 'Ecuador',
+    'BO': 'Bolivia',
+    'UY': 'Uruguay',
+    'PY': 'Paraguay',
+
+    // Europe
+    'GB': 'United Kingdom',
     'DE': 'Germany',
     'FR': 'France',
     'ES': 'Spain',
     'IT': 'Italy',
-    'BR': 'Brazil',
-    'MX': 'Mexico',
-    'RU': 'Russia',
-    'JP': 'Japan',
-    'KR': 'South Korea',
-    'CN': 'China',
-    'SA': 'Saudi Arabia',
-    'AE': 'UAE',
-    'TR': 'Turkey',
-    'VN': 'Vietnam',
-    'PL': 'Poland',
-    'UA': 'Ukraine',
     'NL': 'Netherlands',
+    'BE': 'Belgium',
     'SE': 'Sweden',
     'NO': 'Norway',
     'DK': 'Denmark',
     'FI': 'Finland',
+    'PL': 'Poland',
+    'UA': 'Ukraine',
     'GR': 'Greece',
     'CZ': 'Czech Republic',
     'RO': 'Romania',
     'HU': 'Hungary',
-    'TH': 'Thailand',
-    'ID': 'Indonesia',
-    'MY': 'Malaysia',
+    'PT': 'Portugal',
+    'AT': 'Austria',
+    'CH': 'Switzerland',
+    'IE': 'Ireland',
+    'RS': 'Serbia',
+    'HR': 'Croatia',
+    'BG': 'Bulgaria',
+    'SK': 'Slovakia',
+    'SI': 'Slovenia',
+    'LT': 'Lithuania',
+    'LV': 'Latvia',
+    'EE': 'Estonia',
+    'BY': 'Belarus',
+    'BA': 'Bosnia and Herzegovina',
+    'MK': 'North Macedonia',
+    'AL': 'Albania',
+    'ME': 'Montenegro',
+    'RU': 'Russia',
+
+    // Middle East & North Africa
+    'DZ': 'Algeria',
+    'MA': 'Morocco',
+    'TN': 'Tunisia',
+    'LY': 'Libya',
+    'EG': 'Egypt',
+    'SD': 'Sudan',
+    'SA': 'Saudi Arabia',
+    'AE': 'UAE',
+    'QA': 'Qatar',
+    'KW': 'Kuwait',
+    'BH': 'Bahrain',
+    'OM': 'Oman',
+    'YE': 'Yemen',
+    'IQ': 'Iraq',
+    'SY': 'Syria',
+    'JO': 'Jordan',
+    'LB': 'Lebanon',
+    'PS': 'Palestine',
     'IL': 'Israel',
     'IR': 'Iran',
+    'TR': 'Turkey',
+
+    // Asia
+    'CN': 'China',
+    'TW': 'Taiwan',
+    'HK': 'Hong Kong',
+    'JP': 'Japan',
+    'KR': 'South Korea',
+    'IN': 'India',
     'PK': 'Pakistan',
     'BD': 'Bangladesh',
+    'TH': 'Thailand',
+    'VN': 'Vietnam',
     'PH': 'Philippines',
-    'EG': 'Egypt',
-    'NG': 'Nigeria',
+    'ID': 'Indonesia',
+    'MY': 'Malaysia',
+    'SG': 'Singapore',
+    'MM': 'Myanmar',
+    'KH': 'Cambodia',
+    'LA': 'Laos',
+    'NP': 'Nepal',
+    'LK': 'Sri Lanka',
+    'AF': 'Afghanistan',
+    'UZ': 'Uzbekistan',
+    'KZ': 'Kazakhstan',
+    'TJ': 'Tajikistan',
+    'KG': 'Kyrgyzstan',
+    'TM': 'Turkmenistan',
+    'MN': 'Mongolia',
+    'GE': 'Georgia',
+    'AM': 'Armenia',
+    'AZ': 'Azerbaijan',
+
+    // Africa
     'ZA': 'South Africa',
-    'AR': 'Argentina',
-    'CL': 'Chile',
-    'CO': 'Colombia'
+    'NG': 'Nigeria',
+    'KE': 'Kenya',
+    'ET': 'Ethiopia',
+    'GH': 'Ghana',
+    'TZ': 'Tanzania',
+    'UG': 'Uganda',
+    'ZW': 'Zimbabwe',
+    'SN': 'Senegal',
+    'CI': 'Ivory Coast',
+    'CM': 'Cameroon',
+    'AO': 'Angola',
+    'MZ': 'Mozambique',
+    'MG': 'Madagascar',
+    'BW': 'Botswana',
+    'ZM': 'Zambia',
+    'MW': 'Malawi',
+    'RW': 'Rwanda',
+    'SO': 'Somalia',
+
+    // Oceania
+    'AU': 'Australia',
+    'NZ': 'New Zealand',
+    'FJ': 'Fiji',
+    'PG': 'Papua New Guinea',
+
+    // Caribbean & Central America
+    'CU': 'Cuba',
+    'DO': 'Dominican Republic',
+    'JM': 'Jamaica',
+    'TT': 'Trinidad and Tobago',
+    'CR': 'Costa Rica',
+    'PA': 'Panama',
+    'GT': 'Guatemala',
+    'HN': 'Honduras',
+    'SV': 'El Salvador',
+    'NI': 'Nicaragua'
   };
-  return countries[code] || code;
+
+  return countries[code.toUpperCase()] || code.toUpperCase();
 }
 
 /**

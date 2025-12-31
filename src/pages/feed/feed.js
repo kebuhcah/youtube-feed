@@ -162,18 +162,28 @@ async function handleCaptureComplete(data) {
 
 // Update filter options
 function updateFilterOptions() {
+  // Sort languages by English name
+  const sortedLanguages = [...availableLanguages].sort((a, b) => {
+    return getLanguageName(a).localeCompare(getLanguageName(b));
+  });
+
   // Update language filter
   languageFilter.innerHTML = '<option value="">All Languages</option>';
-  availableLanguages.forEach(lang => {
+  sortedLanguages.forEach(lang => {
     const option = document.createElement('option');
     option.value = lang;
     option.textContent = getLanguageName(lang);
     languageFilter.appendChild(option);
   });
 
+  // Sort countries by English name
+  const sortedCountries = [...availableCountries].sort((a, b) => {
+    return getCountryName(a).localeCompare(getCountryName(b));
+  });
+
   // Update country filter
   countryFilter.innerHTML = '<option value="">All Countries</option>';
-  availableCountries.forEach(country => {
+  sortedCountries.forEach(country => {
     const option = document.createElement('option');
     option.value = country;
     option.textContent = getCountryName(country);

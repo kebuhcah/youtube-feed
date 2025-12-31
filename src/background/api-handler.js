@@ -1,5 +1,5 @@
 import { YOUTUBE_API } from '../shared/constants.js';
-import { chunkArray } from '../shared/utils.js';
+import { chunkArray, normalizeLanguageCode } from '../shared/utils.js';
 
 /**
  * Fetch video details from YouTube Data API v3
@@ -148,9 +148,9 @@ function parseApiResponse(apiResponse) {
       publishedAt: snippet.publishedAt || new Date().toISOString(),
       description: snippet.description || '',
 
-      // Language/region data
-      defaultLanguage: snippet.defaultLanguage || snippet.defaultAudioLanguage || detectLanguageFromTitle(snippet.title) || 'unknown',
-      defaultAudioLanguage: snippet.defaultAudioLanguage || snippet.defaultLanguage || 'unknown',
+      // Language/region data (normalized to avoid duplicates like en-US, en-GB)
+      defaultLanguage: normalizeLanguageCode(snippet.defaultLanguage || snippet.defaultAudioLanguage || detectLanguageFromTitle(snippet.title) || 'unknown'),
+      defaultAudioLanguage: normalizeLanguageCode(snippet.defaultAudioLanguage || snippet.defaultLanguage || 'unknown'),
       regionCode: inferRegionCode(snippet) || 'unknown',
 
       // Capture metadata
