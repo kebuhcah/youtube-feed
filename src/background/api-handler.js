@@ -146,7 +146,7 @@ function parseApiResponse(apiResponse) {
       channelTitle: snippet.channelTitle || 'Unknown Channel',
       channelId: snippet.channelId || '',
       publishedAt: snippet.publishedAt || new Date().toISOString(),
-      description: snippet.description || '',
+      // description: snippet.description || '',
 
       // Language/region data (normalized to avoid duplicates like en-US, en-GB)
       defaultLanguage: normalizeLanguageCode(snippet.defaultLanguage || snippet.defaultAudioLanguage || detectLanguageFromTitle(snippet.title) || 'unknown'),
