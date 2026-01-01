@@ -134,7 +134,7 @@ function parseApiResponse(apiResponse) {
     return [];
   }
 
-  return apiResponse.items.map(item => {
+  const videos = apiResponse.items.map(item => {
     const snippet = item.snippet || {};
     const statistics = item.statistics || {};
     const contentDetails = item.contentDetails || {};
@@ -170,6 +170,11 @@ function parseApiResponse(apiResponse) {
       caption: contentDetails.caption === 'true'
     };
   });
+
+  // Filter out English-language videos
+  return videos.filter(video =>
+    video.defaultLanguage !== 'en' && video.defaultAudioLanguage !== 'en'
+  );
 }
 
 /**
