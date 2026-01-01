@@ -9,6 +9,7 @@ function isYouTubeHomepage() {
 // Extract video IDs from the page
 function extractVideoIds() {
   const videoIds = new Set();
+  let skippedRichSections = 0;
 
   // Multiple selectors for different YouTube layouts
   const selectors = [
@@ -26,11 +27,18 @@ function extractVideoIds() {
     console.log(`[YouTube Feed Organizer] Selector "${selector}" found ${links.length} elements`);
 
     links.forEach(link => {
+      // Skip videos inside ytd-rich-section-renderer (usually promoted/recommended sections)
+      if (link.closest('ytd-rich-section-renderer')) {
+        skippedRichSections++;
+        return;
+      }
+
       const videoId = extractVideoIdFromUrl(link.href);
       if (videoId) videoIds.add(videoId);
     });
   });
 
+  console.log(`[YouTube Feed Organizer] Skipped ${skippedRichSections} videos from rich sections`);
   console.log(`[YouTube Feed Organizer] Extracted ${videoIds.size} unique video IDs`);
   return Array.from(videoIds);
 }
