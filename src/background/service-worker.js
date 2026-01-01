@@ -203,7 +203,7 @@ async function handleTriggerCapture(data, sendResponse) {
     }
 
     // Find or create YouTube tab
-    const tabs = await chrome.tabs.query({ url: 'https://www.youtube.com/*' });
+    const tabs = await chrome.tabs.query({ url: 'https://www.youtube.com/' });
 
     let youtubeTab;
     if (tabs.length > 0) {
