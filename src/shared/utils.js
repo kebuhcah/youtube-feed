@@ -193,7 +193,8 @@ export function getLanguageName(code) {
     'zu': 'Zulu',
     'sh': 'Serbo-Croatian',
     'nan': 'Hokkien',
-    'iw': 'Hebrew'
+    'iw': 'Hebrew',
+    'fil': 'Filipino'
   };
 
   return languages[normalizedCode] || code.toUpperCase();
