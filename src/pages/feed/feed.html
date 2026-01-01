@@ -37,17 +37,31 @@
 
     <div class="filters-bar">
       <div class="filter-group">
-        <label for="language-filter">Language</label>
-        <select id="language-filter" multiple size="8" class="filter-select">
-          <option value="">All Languages</option>
-        </select>
+        <label>Language</label>
+        <div class="multiselect" id="language-multiselect">
+          <div class="multiselect-selected"></div>
+          <input type="text" class="multiselect-input" placeholder="Select languages..." readonly>
+          <div class="multiselect-dropdown" style="display: none;">
+            <div class="multiselect-search-wrapper">
+              <input type="text" class="multiselect-search" placeholder="Search...">
+            </div>
+            <div class="multiselect-options"></div>
+          </div>
+        </div>
       </div>
 
       <div class="filter-group">
-        <label for="country-filter">Country</label>
-        <select id="country-filter" multiple size="8" class="filter-select">
-          <option value="">All Countries</option>
-        </select>
+        <label>Country</label>
+        <div class="multiselect" id="country-multiselect">
+          <div class="multiselect-selected"></div>
+          <input type="text" class="multiselect-input" placeholder="Select countries..." readonly>
+          <div class="multiselect-dropdown" style="display: none;">
+            <div class="multiselect-search-wrapper">
+              <input type="text" class="multiselect-search" placeholder="Search...">
+            </div>
+            <div class="multiselect-options"></div>
+          </div>
+        </div>
       </div>
 
       <div class="filter-group">

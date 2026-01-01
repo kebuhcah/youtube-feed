@@ -1,6 +1,154 @@
 import { MESSAGE_TYPES } from '../../shared/constants.js';
 import { formatViews, formatRelativeTime, getLanguageName, getCountryName, debounce } from '../../shared/utils.js';
 
+// Multiselect Component Class
+class Multiselect {
+  constructor(element, onChange) {
+    this.element = element;
+    this.onChange = onChange;
+    this.selectedValues = new Set();
+    this.options = [];
+
+    this.selectedContainer = element.querySelector('.multiselect-selected');
+    this.input = element.querySelector('.multiselect-input');
+    this.dropdown = element.querySelector('.multiselect-dropdown');
+    this.searchInput = element.querySelector('.multiselect-search');
+    this.optionsContainer = element.querySelector('.multiselect-options');
+
+    this.setupEventListeners();
+  }
+
+  setupEventListeners() {
+    // Toggle dropdown
+    this.input.addEventListener('click', () => this.toggleDropdown());
+
+    // Search
+    this.searchInput.addEventListener('input', () => this.filterOptions());
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!this.element.contains(e.target)) {
+        this.closeDropdown();
+      }
+    });
+  }
+
+  toggleDropdown() {
+    const isOpen = this.dropdown.style.display === 'block';
+    if (isOpen) {
+      this.closeDropdown();
+    } else {
+      this.openDropdown();
+    }
+  }
+
+  openDropdown() {
+    this.dropdown.style.display = 'block';
+    this.searchInput.value = '';
+    this.searchInput.focus();
+    this.filterOptions();
+  }
+
+  closeDropdown() {
+    this.dropdown.style.display = 'none';
+  }
+
+  setOptions(options) {
+    this.options = options;
+    this.renderOptions();
+  }
+
+  renderOptions() {
+    this.optionsContainer.innerHTML = '';
+
+    this.options.forEach(option => {
+      const optionEl = document.createElement('div');
+      optionEl.className = 'multiselect-option';
+      optionEl.dataset.value = option.value;
+      optionEl.dataset.label = option.label.toLowerCase();
+
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.checked = this.selectedValues.has(option.value);
+
+      const label = document.createElement('span');
+      label.className = 'multiselect-option-label';
+      label.textContent = option.label;
+
+      optionEl.appendChild(checkbox);
+      optionEl.appendChild(label);
+
+      optionEl.addEventListener('click', () => {
+        this.toggleOption(option.value);
+      });
+
+      this.optionsContainer.appendChild(optionEl);
+    });
+  }
+
+  filterOptions() {
+    const searchTerm = this.searchInput.value.toLowerCase();
+    const optionEls = this.optionsContainer.querySelectorAll('.multiselect-option');
+
+    optionEls.forEach(el => {
+      const label = el.dataset.label;
+      el.style.display = label.includes(searchTerm) ? 'flex' : 'none';
+    });
+  }
+
+  toggleOption(value) {
+    if (this.selectedValues.has(value)) {
+      this.selectedValues.delete(value);
+    } else {
+      this.selectedValues.add(value);
+    }
+
+    this.updateSelected();
+    this.renderOptions();
+
+    if (this.onChange) {
+      this.onChange();
+    }
+  }
+
+  updateSelected() {
+    this.selectedContainer.innerHTML = '';
+
+    this.selectedValues.forEach(value => {
+      const option = this.options.find(opt => opt.value === value);
+      if (!option) return;
+
+      const chip = document.createElement('span');
+      chip.className = 'multiselect-chip';
+
+      const text = document.createElement('span');
+      text.textContent = option.label;
+
+      const remove = document.createElement('span');
+      remove.className = 'multiselect-chip-remove';
+      remove.textContent = '×';
+      remove.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.toggleOption(value);
+      });
+
+      chip.appendChild(text);
+      chip.appendChild(remove);
+      this.selectedContainer.appendChild(chip);
+    });
+  }
+
+  getSelectedValues() {
+    return Array.from(this.selectedValues);
+  }
+
+  clear() {
+    this.selectedValues.clear();
+    this.updateSelected();
+    this.renderOptions();
+  }
+}
+
 // State
 let allVideos = [];
 let filteredVideos = [];
@@ -20,8 +168,8 @@ const emptyCaptureBtn = document.getElementById('empty-capture-btn');
 const retryBtn = document.getElementById('retry-btn');
 const clearFiltersBtn = document.getElementById('clear-filters-btn');
 
-const languageFilter = document.getElementById('language-filter');
-const countryFilter = document.getElementById('country-filter');
+let languageMultiselect;
+let countryMultiselect;
 const sortSelect = document.getElementById('sort-select');
 const searchInput = document.getElementById('search-input');
 
@@ -44,8 +192,22 @@ const captureProgressText = document.getElementById('capture-progress-text');
 document.addEventListener('DOMContentLoaded', init);
 
 async function init() {
+  setupMultiselects();
   setupEventListeners();
   await loadVideos();
+}
+
+// Setup multiselect components
+function setupMultiselects() {
+  languageMultiselect = new Multiselect(
+    document.getElementById('language-multiselect'),
+    handleFilterChange
+  );
+
+  countryMultiselect = new Multiselect(
+    document.getElementById('country-multiselect'),
+    handleFilterChange
+  );
 }
 
 // Setup event listeners
@@ -56,8 +218,6 @@ function setupEventListeners() {
   settingsBtn.addEventListener('click', openSettings);
   clearFiltersBtn.addEventListener('click', clearFilters);
 
-  languageFilter.addEventListener('change', handleFilterChange);
-  countryFilter.addEventListener('change', handleFilterChange);
   sortSelect.addEventListener('change', handleFilterChange);
   searchInput.addEventListener('input', debounce(handleSearchChange, 300));
 
@@ -185,44 +345,31 @@ function updateFilterOptions(videosForLanguages = allVideos, videosForCountries 
     return languageCounts[b] - languageCounts[a];
   });
 
-  // Update language filter
-  const currentlySelectedLangs = Array.from(languageFilter.selectedOptions).map(opt => opt.value);
-  languageFilter.innerHTML = '<option value="">All Languages</option>';
-  sortedLanguages.forEach(lang => {
-    const option = document.createElement('option');
-    option.value = lang;
-    option.textContent = `${getLanguageName(lang)} (${languageCounts[lang]})`;
-    option.selected = currentlySelectedLangs.includes(lang);
-    languageFilter.appendChild(option);
-  });
+  // Update language multiselect
+  const languageOptions = sortedLanguages.map(lang => ({
+    value: lang,
+    label: `${getLanguageName(lang)} (${languageCounts[lang]})`
+  }));
+  languageMultiselect.setOptions(languageOptions);
 
   // Sort countries by count (descending)
   const sortedCountries = Object.keys(countryCounts).sort((a, b) => {
     return countryCounts[b] - countryCounts[a];
   });
 
-  // Update country filter
-  const currentlySelectedCountries = Array.from(countryFilter.selectedOptions).map(opt => opt.value);
-  countryFilter.innerHTML = '<option value="">All Countries</option>';
-  sortedCountries.forEach(country => {
-    const option = document.createElement('option');
-    option.value = country;
-    option.textContent = `${getCountryName(country)} (${countryCounts[country]})`;
-    option.selected = currentlySelectedCountries.includes(country);
-    countryFilter.appendChild(option);
-  });
+  // Update country multiselect
+  const countryOptions = sortedCountries.map(country => ({
+    value: country,
+    label: `${getCountryName(country)} (${countryCounts[country]})`
+  }));
+  countryMultiselect.setOptions(countryOptions);
 }
 
 // Handle filter change
 function handleFilterChange() {
-  // Get selected values
-  const selectedLanguages = Array.from(languageFilter.selectedOptions)
-    .map(opt => opt.value)
-    .filter(val => val !== '');
-
-  const selectedCountries = Array.from(countryFilter.selectedOptions)
-    .map(opt => opt.value)
-    .filter(val => val !== '');
+  // Get selected values from multiselects
+  const selectedLanguages = languageMultiselect.getSelectedValues();
+  const selectedCountries = countryMultiselect.getSelectedValues();
 
   currentFilters = {
     ...currentFilters,
@@ -382,8 +529,8 @@ function openSettings() {
 
 // Clear filters
 function clearFilters() {
-  languageFilter.selectedIndex = 0;
-  countryFilter.selectedIndex = 0;
+  languageMultiselect.clear();
+  countryMultiselect.clear();
   sortSelect.value = 'date';
   searchInput.value = '';
 
