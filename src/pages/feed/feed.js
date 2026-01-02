@@ -463,7 +463,8 @@ function applyFilters() {
 function sortVideos() {
   switch (currentFilters.sortBy) {
     case 'date':
-      filteredVideos.sort((a, b) => b.capturedAt - a.capturedAt);
+      // Sort by YouTube publish date (newest first)
+      filteredVideos.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
       break;
     case 'views':
       filteredVideos.sort((a, b) => b.viewCount - a.viewCount);
