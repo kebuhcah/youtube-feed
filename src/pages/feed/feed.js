@@ -495,9 +495,13 @@ function createVideoCard(video) {
   card.onclick = () => openVideo(video.id);
 
   const thumbnail = video.thumbnail || 'https://via.placeholder.com/320x180?text=No+Thumbnail';
+  const duration = formatDuration(video.duration);
 
   card.innerHTML = `
-    <img src="${thumbnail}" alt="${video.title}" class="video-thumbnail" loading="lazy">
+    <div class="video-thumbnail-container">
+      <img src="${thumbnail}" alt="${video.title}" class="video-thumbnail" loading="lazy">
+      ${duration ? `<span class="video-duration">${duration}</span>` : ''}
+    </div>
     <div class="video-info">
       <h3 class="video-title">${escapeHtml(video.title)}</h3>
       <p class="video-channel">${escapeHtml(video.channelTitle)}</p>
@@ -606,9 +610,27 @@ function hideCaptureModal() {
   captureModal.style.display = 'none';
 }
 
-// Utility function
+// Utility functions
 function escapeHtml(text) {
   const div = document.createElement('div');
   div.textContent = text;
   return div.innerHTML;
+}
+
+function formatDuration(duration) {
+  if (!duration || duration === 'PT0S') return null;
+
+  // Parse ISO 8601 duration format (e.g., PT1H2M10S, PT4M33S)
+  const match = duration.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+  if (!match) return null;
+
+  const hours = parseInt(match[1] || 0);
+  const minutes = parseInt(match[2] || 0);
+  const seconds = parseInt(match[3] || 0);
+
+  if (hours > 0) {
+    return `${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+  } else {
+    return `${minutes}:${String(seconds).padStart(2, '0')}`;
+  }
 }

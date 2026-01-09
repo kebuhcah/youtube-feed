@@ -385,11 +385,31 @@ main {
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
 }
 
+.video-thumbnail-container {
+  position: relative;
+  width: 100%;
+}
+
 .video-thumbnail {
   width: 100%;
   aspect-ratio: 16/9;
   object-fit: cover;
   background: #f0f0f0;
+  display: block;
+}
+
+.video-duration {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background: rgba(0, 0, 0, 0.85);
+  color: #fff;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  letter-spacing: 0.5px;
 }
 
 .video-info {
